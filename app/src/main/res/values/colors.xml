@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_black">#000000</color>
+    <color name="color_FFFFFF">#ffffff</color>
+    <color name="color_000000">#000000</color>
+    <color name="color_homeScreen">#5A18AF</color>
+    <color name="text_hint_color">#AAAAAA</color>
+    <color name="card_title_color">#555555</color>
+
+    <color name="layout_bgColor">#EBEBF1</color>
+    <color name="color_transparent">#00000000</color>
+    <color name="color_background_info">#6E30BF</color>
+    <color name="color_login_button_back">#143E5D</color>
+
+
+    <!--Graphics Color-->
+    <color name="app_theme_color">#07b1ce</color>
+    <color name="new_Trials_Color">#9eb3fc</color>
+    <color name="failed_Trials_Color">#6c7bae</color>
+    <color name="completed_Trials_Color">#89e2b7</color>
+    <color name="in_Progress_Trials_Color">#efa973</color>
+
+    <color name="color_C2DD47">#C2DD47</color>
+    <color name="color_ebebf1">#ebebf1</color>
+    <color name="color_status_bar">#00A3F4</color>
+
+    <color name="color_aaaaaa">#aaaaaa</color>
+    <color name="color_labelColor">#D9555555</color>
+    <color name="color_red">#D65049</color>
+    <color name="color_yellow">#FFE900</color>
+
+    <color name="color_2DCC70">#2DCC70</color>
+
+    <color name="color_599388">#599388</color>
+
+
+    <color name="color_one">#e66756</color>
+    <color name="color_two">#43c3d0</color>
+    <color name="color_three">#f5a02a</color>
+    <color name="color_four">#ad86f8</color>
+    <color name="color_five">#03c1ad</color>
+    <color name="color_six">#ed5f8e</color>
+    <color name="color_seven">#5fa6f4</color>
+    <color name="color_eight">#69d574</color>
+    <color name="color_nine">#e077d1</color>
+    <color name="color_ten">#f4c234</color>
+    <color name="color_app_profile">#E54C3B</color>
+    <color name="color_kplexus">#404559</color>
+    <color name="color_B8B8B8">#B8B8B8</color>
+    <color name="filter_selection_color">#80aaaaaa</color>
+    <color name="color_59CFD0">#59CFD0</color>
+    <color name="color_C0E2F4">#C0E2F4</color>
+    <color name="app_color">#495064</color>
+    <color name="color_login_button">#26FFFFFF</color>
+    <color name="color_00BC8C">#00BC8C</color>
+
+    <color name="color_progress_back">#A6aaaaaa</color>
+
+    <color name="color_9079e9">#9079e9</color>
+
+    <color name="color_02995C">#02995C</color>
+
+    <color name="color_D4D4D4">#D4D4D4</color>
+
+
+    <color name="color_F4F7F7">#F4F7F7</color>
+
+    <color name="color_3686DF">#3686DF</color>
+
+
+
+</resources>

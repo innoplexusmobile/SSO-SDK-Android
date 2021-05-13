@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">SSOManager</string>
+    <string name="username">UserName</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="forgot">Forgot Password</string>
+
+    <string name="change">Change Password</string>
+
+    <string name="signUp">SignUp User</string>
+
+    <string name="logout">Logout</string>
+
+    <string name="network_error">Please check  Internet Connection</string>
+
+    <string name="otp">Enter Otp</string>
+
+    <string name="authrize">Authorize</string>
+
+    <string name="verify_otp">Verify</string>
+
+    <string name="blankToken">Please Login First</string>
+
+
+    <!--FB Error-->
+    <string name="fb_requestCancel">Facebook Request Cancel</string>
+
+    <string name="fb_request_error">Facebook Error</string>
+
+    <string name="fb_name">name</string>
+    <string name="fb_email">email</string>
+    <string name="fb_gender">gender</string>
+
+
+    <string name="login_fb">Facebook</string>
+    <string name="login_linked">LinkedIn</string>
+    <string name="login_google">Google</string>
+
+    <string name="logout_success">Logout Success</string>
+
+
+    <string name="server_client_id">Authorize</string>
+
+
+
+    <!--UserConsent-->
+
+    <string name="user_consent">Data Usage Policy!</string>
+    <string name="consent_msg">Please agree with terms and conditions in order to continue using this product.</string>
+    <string name="agree_msg">I agree to the </string>
+
+    <string name="user_continu">Continue</string>
+
+    <string name="term_condition">Terms and Conditions.</string>
+
+
+    <string name="user_cancel">Cancel</string>
+
+
+
+</resources>
