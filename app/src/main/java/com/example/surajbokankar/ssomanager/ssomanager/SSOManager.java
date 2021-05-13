@@ -1518,4 +1518,12 @@ public class SSOManager {
         ssoManager = null;
     }
 
+     public void setUserString(String value, String key) {
+        editor.putString(key, value);
+        doCommit();
+    }
+
+    public String getUserString(String key) {
+        return sharedPreferences.getString(key, "");
+    }
 }
