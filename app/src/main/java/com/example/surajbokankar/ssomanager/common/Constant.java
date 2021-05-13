@@ -57,6 +57,7 @@ public class Constant {
         String name = "file_name";
         String TimeStamp = "TimeStamp";
         String deviceId = "DeviceID";
+        String language = "lang";
     }
 
 
