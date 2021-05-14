@@ -58,9 +58,9 @@ dependencies {
     //compile "com.google.firebase:firebase-auth:$project.ext.googlePlayServicesVersion"
     //compile 'com.gitlab.jitpack-io:gradle-simple:-SNAPSHOT'
 
-    compile 'com.google.android.gms:play-services-auth:16.0.1'
+    compile 'com.google.android.gms:play-services-auth:19.0.0'
+    compile 'com.google.android.gms:play-services:12.0.1'
 
-    compile 'com.google.android.gms:play-services:11.0.4'
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.scottyab:aescrypt:0.0.1'
     compile 'com.snatik:storage:2.1.0'
