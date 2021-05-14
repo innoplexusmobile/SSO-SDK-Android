@@ -64,7 +64,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.scottyab:aescrypt:0.0.1'
     compile 'com.snatik:storage:2.1.0'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.github.ralphpina:Android-Permissions-Manager:v2.0.1'
 
 
