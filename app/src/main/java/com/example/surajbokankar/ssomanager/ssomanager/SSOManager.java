@@ -43,7 +43,7 @@ import com.example.surajbokankar.ssomanager.prefrence.PreferenceManager;
 import com.example.surajbokankar.ssomanager.sharesession.SessionManager;
 import com.example.surajbokankar.ssomanager.sharesession.SessionModel;
 import com.example.surajbokankar.ssomanager.social.FacebookManager;
-import com.example.surajbokankar.ssomanager.social.GoogleManager;
+//import com.example.surajbokankar.ssomanager.social.GoogleManager;
 import com.example.surajbokankar.ssomanager.webview.TermsConditionWebview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scottyab.aescrypt.AESCrypt;
@@ -1196,9 +1196,9 @@ public class SSOManager {
         LinkedInManager.getInstance(context).initiateLinkedInSDK(context,loginCallback);
     }*/
 
-    public void callGoogleSignIn(Context context, String serverClientId, LoginListener loginCallback) {
-        GoogleManager.getInstance(context).callGoogleSign(context, serverClientId, loginCallback);
-    }
+//    public void callGoogleSignIn(Context context, String serverClientId, LoginListener loginCallback) {
+//        GoogleManager.getInstance(context).callGoogleSign(context, serverClientId, loginCallback);
+//    }
 
 
     public void callSubscribeUserApi(final Context context, final LoginCallback loginCallback) {
