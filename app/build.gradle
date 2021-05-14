@@ -71,7 +71,7 @@ dependencies {
 }
 
 project.ext {
-    googlePlayServicesVersion = '11.0.4'
+    googlePlayServicesVersion = '12.0.1'
 }
 // build a jar with source files
 task sourcesJar(type: Jar) {
