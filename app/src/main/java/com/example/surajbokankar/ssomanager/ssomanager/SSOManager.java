@@ -18,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.surajbokankar.ssomanager.BuildConfig;
 import com.example.surajbokankar.ssomanager.LoginCallback;
 import com.example.surajbokankar.ssomanager.LoginListener;
 import com.example.surajbokankar.ssomanager.R;
@@ -42,12 +43,11 @@ import com.example.surajbokankar.ssomanager.network.RetrofitRequestBuilder;
 import com.example.surajbokankar.ssomanager.prefrence.PreferenceManager;
 import com.example.surajbokankar.ssomanager.sharesession.SessionManager;
 import com.example.surajbokankar.ssomanager.sharesession.SessionModel;
-import com.example.surajbokankar.ssomanager.social.FacebookManager;
-//import com.example.surajbokankar.ssomanager.social.GoogleManager;
 import com.example.surajbokankar.ssomanager.webview.TermsConditionWebview;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.scottyab.aescrypt.AESCrypt;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -99,7 +99,7 @@ public class SSOManager {
             code = url.split("=")[1];
             isCallBackUrl = true;
         }
-        Log.i(TAG, "getCallBackUrl: Code=" + code);
+        if(BuildConfig.DEBUG) Log.i(TAG, "getCallBackUrl: Code=" + code);
         SSOManager.getInstance(mContext).setRedirectCode(code);
         return isCallBackUrl;
     }
@@ -108,7 +108,6 @@ public class SSOManager {
 
     //Login user using Email and Password which return UserInfo  and gives a call to get AccessToken
     public void login(final String email, final String password, final LoginCallback loginCallback) {
-
         try {
             final ErrorResponse errorResponse = new ErrorResponse();
             if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
@@ -121,54 +120,7 @@ public class SSOManager {
                         passWord = password;
                         onLoginOrSubscribeSuccess(response, mContext, loginCallback);
 
-                        /* HashMap<String, Boolean> requestStatusMap = StatusCodeHandler.statusCodeCheck(response.code());
-                        if (requestStatusMap.containsKey(Constant.LoginRequest.isRequetSuccess)) {
 
-                            if (requestStatusMap.get(Constant.LoginRequest.isRequetSuccess)) {
-                                //do your stuffs here
-                                LoginParentPojo loginResponse = response.body();
-                                if (loginResponse != null) {
-                                    ResponseData data = loginResponse.responseData;
-                                    if(data.otpEnabled){
-                                        setOtpCheck(true);
-                                        Log.i(TAG, "onResponse: Session="+response.headers().get(Constant.Authorization));
-                                        setSessionKey(response.headers().get(Constant.Authorization));
-                                        loginCallback.onSuccess(null);
-
-                                    }else{
-                                        if(data.callbackUrl!=null){
-                                            callBackMethod(data,password,loginCallback);
-
-                                        }else{
-                                            setSessionKey(response.headers().get(Constant.Authorization));
-                                            getCallBackUrlOTPEnabledState(mContext,loginCallback);
-                                        }
-                                    }
-
-
-                                } else {
-                                    errorResponse.errorMessageString=response.message();
-                                    loginCallback.onError(errorResponse);
-                                }
-
-                            } else {
-                                errorResponse.errorMessageString=response.message();
-                                loginCallback.onError(errorResponse);
-                            }
-                        }else{
-                            if(response.code()== Constant.SUBSCRIBE_ERROR){
-                                setSessionKey(response.headers().get(Constant.Authorization));
-                                callSubscribeUserApi(mContext,email,password,loginCallback);
-                            }else{
-                                try {
-                                    JSONObject jObjError = new JSONObject(response.errorBody().string());
-                                    seterrorResponse(jObjError,loginCallback);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        }*/
                     }
 
                     @Override
@@ -183,7 +135,7 @@ public class SSOManager {
             }
 
         } catch (Exception e) {
-            Log.e(TAG, "login: Error=", e);
+            if(BuildConfig.DEBUG)  Log.e(TAG, "login: Error=", e);
         }
 
 
@@ -210,7 +162,7 @@ public class SSOManager {
                     } else {
                         try {
                             JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            Log.i(TAG, "onResponseFailure: " + jObjError.getString("message"));
+                            if(BuildConfig.DEBUG)  Log.i(TAG, "onResponseFailure: " + jObjError.getString("message"));
                             if (loginCallback != null) {
                                 loginCallback.onError(jObjError.getString("message"));
                             }
@@ -349,22 +301,6 @@ public class SSOManager {
             AppCompatTextView termCondition = (AppCompatTextView) dialog.findViewById(R.id.agree_text_view);
 
 
-
-
-
-                /*float[] corners=new float[]{8,8,8,8,8,8,8,8};
-                int solidColor=context.getResources().getColor(R.color.colorAccent);
-                GradientDrawable drawable= CustomDrawable.getInstance().setDrawableShape(GradientDrawable.RECTANGLE).setDrawableCornerRadius(corners).setDrawableSolidColor(solidColor).getDrawable();
-                delete.setBackgroundDrawable(drawable);
-
-
-                int cancelSolidColor=context.getResources().getColor(R.color.color_FFFFFF);
-                int stroke=context.getResources().getColor(R.color.card_title_color);
-
-                GradientDrawable cancelDrawable= CustomDrawable.getInstance().setDrawableShape(GradientDrawable.RECTANGLE).setDrawableCornerRadius(corners).setDrawableSolidColor(cancelSolidColor).setDrawableStrokeColor(stroke).setDrawableStrokeWidth(1).getDrawable();
-                cancel.setBackgroundDrawable(cancelDrawable);*/
-
-
             continueButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -453,7 +389,7 @@ public class SSOManager {
             errorResponse.errorMessageString = "No User Consent";
             callback.onError(errorResponse);
             dialog.dismiss();
-            Log.i(TAG, "getCustomDialog: Error=" + e.getMessage());
+            if(BuildConfig.DEBUG)   Log.i(TAG, "getCustomDialog: Error=" + e.getMessage());
         }
 
 
@@ -488,38 +424,39 @@ public class SSOManager {
 
     // It Fetches user token adn store it into local shared preference
     public void fetchTokenApi(final String password, final CommonListener listener) {
+        try {
+            RetrofitRequestBuilder.getInstance(mContext).getAccessTokenApi(mContext, new Callback<AccessTokenParentPojo>() {
+                @Override
+                public void onResponse(Call<AccessTokenParentPojo> call, Response<AccessTokenParentPojo> response) {
+                    HashMap<String, Boolean> hashMap = StatusCodeHandler.statusCodeCheck(response.code());
+                    if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
+                        AccessTokenParentPojo responseData = response.body();
+                        if (responseData != null) {
+                            setUserToken(responseData);
+                            UserInfo userInfo = responseData.profile;
+                            userInfo.passWord = password;
+                            userInfo.email = SSOManager.getInstance(mContext).getUserEmail();
+                            //setUserSession(userInfo);
+                            SSOManager.getInstance(mContext).setUserInfo(userInfo);
+                            SSOManager.getInstance(mContext).setFilterInfo(responseData);
+                            listener.onSuccess();
+                        }
 
-
-        RetrofitRequestBuilder.getInstance(mContext).getAccessTokenApi(mContext, new Callback<AccessTokenParentPojo>() {
-            @Override
-            public void onResponse(Call<AccessTokenParentPojo> call, Response<AccessTokenParentPojo> response) {
-                HashMap<String, Boolean> hashMap = StatusCodeHandler.statusCodeCheck(response.code());
-                if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
-                    AccessTokenParentPojo responseData = response.body();
-                    if (responseData != null) {
-                        setUserToken(responseData);
-                        UserInfo userInfo = responseData.profile;
-                        userInfo.passWord = password;
-                        userInfo.email = SSOManager.getInstance(mContext).getUserEmail();
-                        //setUserSession(userInfo);
-                        SSOManager.getInstance(mContext).setUserInfo(userInfo);
-                        SSOManager.getInstance(mContext).setFilterInfo(responseData);
-                        listener.onSuccess();
+                    } else {
+                        listener.onFailure(response.message());
                     }
-
-                } else {
-                    listener.onFailure(response.message());
                 }
-            }
 
-            @Override
-            public void onFailure(Call<AccessTokenParentPojo> call, Throwable t) {
-                Log.i(TAG, "onFailure: Access Token Error=" + t.getMessage());
-                listener.onFailure(t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<AccessTokenParentPojo> call, Throwable t) {
+                    if(BuildConfig.DEBUG) Log.i(TAG, "onFailure: Access Token Error=" + t.getMessage());
+                    listener.onFailure(t.getMessage());
+                }
+            });
 
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -558,157 +495,24 @@ public class SSOManager {
                 listener.onFailureError(errorResponse);
             }
         } catch (Exception e) {
-            Log.i(TAG, "forgotPassword: Error=" + e.getMessage());
+            if(BuildConfig.DEBUG)Log.i(TAG, "forgotPassword: Error=" + e.getMessage());
         }
     }
 
 
     public void changePassword(String oldPassword, String newPassword, String confirmPassword, final AuthResponseInterface listener) {
-        final ErrorResponse errorResponse = new ErrorResponse();
-        if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
-            RetrofitRequestBuilder.getInstance(mContext).changeUserPassword(oldPassword, newPassword, confirmPassword, new Callback<RequestParentPojo>() {
-                @Override
-                public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
-
-                    if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
-                        AuthResponseData responseData = response.body().authResponseData;
-                        if (responseData != null) {
-                            listener.onSuccess(responseData);
-                        }
-                    } else {
-                        try {
-                            JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            setError(jObjError, listener);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-
-                @Override
-                public void onFailure(Call<RequestParentPojo> call, Throwable t) {
-                    Log.i(TAG, "onResponse: ChangePassword=" + t.getMessage());
-                    errorResponse.errorMessageString = t.getMessage();
-                    listener.onFailureError(errorResponse);
-                }
-            });
-        } else {
-            errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
-            listener.onFailureError(errorResponse);
-
-        }
-    }
-
-
-    public void logoutUser(final String emailId, final AuthResponseInterface listener) {
-        final ErrorResponse errorResponse = new ErrorResponse();
-        if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
-            String tokenId = SSOManager.getInstance(mContext).getTokenId();
-            if (isUserLoggedIn()) {
-                RetrofitRequestBuilder.getInstance(mContext).logoutUser(mContext, emailId, new Callback<RequestParentPojo>() {
+        try {
+            final ErrorResponse errorResponse = new ErrorResponse();
+            if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
+                RetrofitRequestBuilder.getInstance(mContext).changeUserPassword(oldPassword, newPassword, confirmPassword, new Callback<RequestParentPojo>() {
                     @Override
-                    public void onResponse(Call<RequestParentPojo> call, final Response<RequestParentPojo> response) {
+                    public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
+
                         if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
                             AuthResponseData responseData = response.body().authResponseData;
-                            Log.i(TAG, "onResponse: Logout");
-                            logout();
-                            listener.onSuccess(responseData);
-
-                        } else {
-                            if (response.code() == Constant.AUTH_FAIL) {
-                                SSOManager.getInstance(mContext).renewTokenApi(mContext, new LoginCallback() {
-                                    @Override
-                                    public void onSuccess(UserInfo userInfo) {
-                                        if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
-                                            logoutUser(emailId, listener);
-                                        } else {
-                                            AuthResponseData authResponseData = new AuthResponseData();
-                                            authResponseData.info = null;
-                                            authResponseData.message = mContext.getResources().getString(R.string.logout_success);
-                                            logout();
-                                            listener.onSuccess(authResponseData);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onError(ErrorResponse error) {
-                                        AuthResponseData authResponseData = new AuthResponseData();
-                                        authResponseData.info = null;
-                                        authResponseData.message = mContext.getResources().getString(R.string.logout_success);
-                                        logout();
-                                        listener.onSuccess(authResponseData);
-                                    }
-                                });
-                            } else {
-                                try {
-                                    JSONObject jObjError = new JSONObject(response.errorBody().string());
-                                    setError(jObjError, listener);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(Call<RequestParentPojo> call, Throwable t) {
-                        errorResponse.errorMessageString = t.getMessage();
-                        listener.onFailureError(errorResponse);
-                    }
-                });
-
-            } else {
-                errorResponse.errorMessageString = mContext.getResources().getString(R.string.blankToken);
-                listener.onFailureError(errorResponse);
-                Log.i(TAG, "logoutUser: TokenId Blank");
-            }
-        } else {
-            errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
-            listener.onFailureError(errorResponse);
-        }
-
-    }
-
-
-    public void signUpInviteUser(boolean isActive, String emailId, JSONObject input, final AuthResponseInterface listener) {
-        final ErrorResponse errorResponse = new ErrorResponse();
-        if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
-            RetrofitRequestBuilder.getInstance(mContext).signUpUser(isActive, emailId, input, new Callback<RequestParentPojo>() {
-                @Override
-                public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
-                    if (response.code() == Constant.STATUS_OK) {
-                        AuthResponseData responseData = response.body().authResponseData;
-                        if (responseData != null) {
-                            UserInfo data = responseData.info;
-
                             if (responseData != null) {
-                                if (responseData.otpEnabled)
-                                    setOtpCheck(true);
-
-                                Log.i(TAG, "onResponse: Session=" + response.headers().get(Constant.Authorization));
-
-                                setSessionKey(response.headers().get(Constant.Authorization));
-                                callBackUrlSignUpInvite(responseData, "", listener);
-
-                            } else {
-                                errorResponse.errorMessageString = "User Info blank";
-                                listener.onFailureError(errorResponse);
+                                listener.onSuccess(responseData);
                             }
-
-                        }
-
-
-                    } else {
-                        if (response.code() == Constant.STATUS_SUCCESS) {
-                            if (response.body().errorMessage != null) {
-                                errorResponse.errorMessageString = response.body().errorMessage;
-                            } else {
-                                errorResponse.errorMessageString = Constant.SUCCESS_MESSAGE;
-                            }
-                            listener.onFailureError(errorResponse);
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -717,55 +521,208 @@ public class SSOManager {
                                 e.printStackTrace();
                             }
                         }
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<RequestParentPojo> call, Throwable t) {
-                    errorResponse.errorMessageString = t.getMessage();
-                    listener.onFailureError(errorResponse);
-                }
-            });
-        } else {
-            errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
-            listener.onFailureError(errorResponse);
+                    }
+
+                    @Override
+                    public void onFailure(Call<RequestParentPojo> call, Throwable t) {
+                        if(BuildConfig.DEBUG)  Log.i(TAG, "onResponse: ChangePassword=" + t.getMessage());
+                        errorResponse.errorMessageString = t.getMessage();
+                        listener.onFailureError(errorResponse);
+                    }
+                });
+            } else {
+                errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
+                listener.onFailureError(errorResponse);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+    }
+
+
+    public void logoutUser(final String emailId, final AuthResponseInterface listener) {
+        try {
+            final ErrorResponse errorResponse = new ErrorResponse();
+            if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
+                String tokenId = SSOManager.getInstance(mContext).getTokenId();
+                if (isUserLoggedIn()) {
+                    RetrofitRequestBuilder.getInstance(mContext).logoutUser(mContext, emailId, new Callback<RequestParentPojo>() {
+                        @Override
+                        public void onResponse(Call<RequestParentPojo> call, final Response<RequestParentPojo> response) {
+                            if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
+                                AuthResponseData responseData = response.body().authResponseData;
+                                logout();
+                                listener.onSuccess(responseData);
+
+                            } else {
+                                if (response.code() == Constant.AUTH_FAIL) {
+                                    SSOManager.getInstance(mContext).renewTokenApi(mContext, new LoginCallback() {
+                                        @Override
+                                        public void onSuccess(UserInfo userInfo) {
+                                            if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
+                                                logoutUser(emailId, listener);
+                                            } else {
+                                                AuthResponseData authResponseData = new AuthResponseData();
+                                                authResponseData.info = null;
+                                                authResponseData.message = mContext.getResources().getString(R.string.logout_success);
+                                                logout();
+                                                listener.onSuccess(authResponseData);
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onError(ErrorResponse error) {
+                                            AuthResponseData authResponseData = new AuthResponseData();
+                                            authResponseData.info = null;
+                                            authResponseData.message = mContext.getResources().getString(R.string.logout_success);
+                                            logout();
+                                            listener.onSuccess(authResponseData);
+                                        }
+                                    });
+                                } else {
+                                    try {
+                                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                        setError(jObjError, listener);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                            }
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<RequestParentPojo> call, Throwable t) {
+                            errorResponse.errorMessageString = t.getMessage();
+                            listener.onFailureError(errorResponse);
+                        }
+                    });
+
+                } else {
+                    errorResponse.errorMessageString = mContext.getResources().getString(R.string.blankToken);
+                    listener.onFailureError(errorResponse);
+                    if(BuildConfig.DEBUG)Log.i(TAG, "logoutUser: TokenId Blank");
+                }
+            } else {
+                errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
+                listener.onFailureError(errorResponse);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void signUpInviteUser(boolean isActive, String emailId, JSONObject input, final AuthResponseInterface listener) {
+        try {
+            final ErrorResponse errorResponse = new ErrorResponse();
+            if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
+                RetrofitRequestBuilder.getInstance(mContext).signUpUser(isActive, emailId, input, new Callback<RequestParentPojo>() {
+                    @Override
+                    public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
+                        if (response.code() == Constant.STATUS_OK) {
+                            AuthResponseData responseData = response.body().authResponseData;
+                            if (responseData != null) {
+                                UserInfo data = responseData.info;
+
+                                if (responseData != null) {
+                                    if (responseData != null && responseData.otpEnabled != null) {
+                                        setOtpCheck(true);
+                                    }
+                                    if (responseData.callbackUrl != null) {
+                                        setSessionKey(response.headers().get(Constant.Authorization));
+                                        callBackUrlSignUpInvite(responseData, "", listener);
+                                    } else {
+                                        listener.onSuccess(data);
+                                    }
+                                } else {
+                                    errorResponse.errorMessageString = "User Info blank";
+                                    listener.onFailureError(errorResponse);
+                                }
+
+                            }
+
+
+                        } else {
+                            if (response.code() == Constant.STATUS_SUCCESS) {
+                                if (response.body().errorMessage != null) {
+                                    errorResponse.errorMessageString = response.body().errorMessage;
+                                } else {
+                                    errorResponse.errorMessageString = Constant.SUCCESS_MESSAGE;
+                                }
+                                listener.onFailureError(errorResponse);
+                            } else {
+                                try {
+                                    JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                    setError(jObjError, listener);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RequestParentPojo> call, Throwable t) {
+                        errorResponse.errorMessageString = t.getMessage();
+                        listener.onFailureError(errorResponse);
+                    }
+                });
+            } else {
+                errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
+                listener.onFailureError(errorResponse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
     //For user login through OTP Verification
     public void otpVerification(Context context, String otp, final String password, final LoginCallback callback) {
-        final ErrorResponse errorResponse = new ErrorResponse();
-        if (NetworkManager.getInstance().isConnectingToInternet(context)) {
-            RetrofitRequestBuilder.getInstance(context).verifyOtp(otp, new Callback<LoginParentPojo>() {
-                @Override
-                public void onResponse(Call<LoginParentPojo> call, Response<LoginParentPojo> response) {
-                    if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
-                        LoginParentPojo loginResponse = response.body();
-                        if (loginResponse.responseData.info != null) {
-                            callBackMethod(loginResponse.responseData, password, callback);
+        try {
+            final ErrorResponse errorResponse = new ErrorResponse();
+            if (NetworkManager.getInstance().isConnectingToInternet(context)) {
+                RetrofitRequestBuilder.getInstance(context).verifyOtp(otp, new Callback<LoginParentPojo>() {
+                    @Override
+                    public void onResponse(Call<LoginParentPojo> call, Response<LoginParentPojo> response) {
+                        if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
+                            LoginParentPojo loginResponse = response.body();
+                            if (loginResponse.responseData.info != null) {
+                                callBackMethod(loginResponse.responseData, password, callback);
+                            }
+                        } else {
+                            try {
+                                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                                seterrorResponse(jObjError, callback);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    } else {
-                        try {
-                            JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            seterrorResponse(jObjError, callback);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+
                     }
 
-                }
-
-                @Override
-                public void onFailure(Call<LoginParentPojo> call, Throwable t) {
-                    errorResponse.errorMessageString = t.getMessage();
-                    callback.onError(errorResponse);
-                }
-            });
-        } else {
-            errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
-            callback.onError(errorResponse);
+                    @Override
+                    public void onFailure(Call<LoginParentPojo> call, Throwable t) {
+                        errorResponse.errorMessageString = t.getMessage();
+                        callback.onError(errorResponse);
+                    }
+                });
+            } else {
+                errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
+                callback.onError(errorResponse);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
 
     }
 
@@ -788,8 +745,30 @@ public class SSOManager {
                         }
                     } else {
                         if (response.code() == Constant.SUBSCRIBE_ERROR) {
-                            setSessionKey(response.headers().get(Constant.Authorization));
-                            callSubscribeUserApi(mContext, callback);
+
+                            JSONObject jObjError = null;
+                            try {
+                                jObjError = new JSONObject(response.errorBody().string());
+                                if(BuildConfig.DEBUG) Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
+                                String erroMessage = jObjError.getString("errorMessage");
+                                if (erroMessage != null && erroMessage.equalsIgnoreCase("User haven't right access to application")) {
+                                    try {
+                                        jObjError.put(Constant.errorCode, "403");
+                                        jObjError.put(Constant.errorMessage, "User Deactivated");
+                                        seterrorResponse(jObjError, callback);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    //callSubscribeUserApi(mContext, callback);
+                                    setSessionKey(response.headers().get(Constant.Authorization));
+                                    callSubscribeUserApi(mContext, callback);
+                                }
+
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
                         } else {
                             try {
                                 JSONObject jObjError = new JSONObject(response.errorBody().string());
@@ -914,7 +893,7 @@ public class SSOManager {
         editor.putString(Constant.PreferenceString.tokenString, tokenId);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         editor.putString(Constant.PreferenceString.TimeStamp, String.valueOf(timestamp.getTime()));
-        Log.i(TAG, "AccessToken TimeStamp=" + timestamp.getTime());
+        if(BuildConfig.DEBUG)Log.i(TAG, "AccessToken TimeStamp=" + timestamp.getTime());
         doCommit();
     }
 
@@ -928,9 +907,9 @@ public class SSOManager {
         if (tokenSetTime != null && !TextUtils.isEmpty(tokenSetTime)) {
             Long timeDiff = timestamp.getTime() - Long.parseLong(tokenSetTime);
             if (timeDiff != null) {
-                Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
+                if(BuildConfig.DEBUG) Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
                 if (((timeDiff / 1000) / 60) >= 1380) {
-                    Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
+                    if(BuildConfig.DEBUG) Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
                     getCallBackUrlOTPEnabledState(applicationContext, loginCallback);
                 } else {
                     loginCallback.onSuccess(getUserInfo());
@@ -1162,12 +1141,22 @@ public class SSOManager {
     public void seterrorResponse(JSONObject json, LoginCallback callBack) {
         try {
             ErrorResponse errorResponse = new ErrorResponse();
-            String errorCode = json.getString(Constant.errorMessage);
-            errorResponse.errorCode = errorCode;
+            if(json.has(Constant.errorCode)){
+                String errorCode = json.getString(Constant.errorCode);
+                errorResponse.errorCode = errorCode;
+            }
             errorResponse.errorMessageString = json.getString(Constant.errorMessage);
             callBack.onError(errorResponse);
         } catch (Exception e) {
             Log.e(TAG, "seterrorResponse: Error", e);
+            ErrorResponse errorResponse = new ErrorResponse();
+            try {
+                errorResponse.errorMessageString = json.getString(Constant.errorMessage);
+                callBack.onError(errorResponse);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
+
         }
     }
 
@@ -1175,20 +1164,28 @@ public class SSOManager {
         try {
             ErrorResponse errorResponse = new ErrorResponse();
             if (json.has(Constant.errorMessage)) {
-                String errorCode = json.getString(Constant.errorMessage);
-                errorResponse.errorCode = errorCode;
+                if(json.has(Constant.errorCode)){
+                    String errorCode = json.getString(Constant.errorCode);
+                    errorResponse.errorCode = errorCode;
+                }
                 errorResponse.errorMessageString = json.getString(Constant.errorMessage);
             }
-
             callBack.onFailureError(errorResponse);
         } catch (Exception e) {
             Log.e(TAG, "seterrorResponse: Error", e);
+            ErrorResponse errorResponse = new ErrorResponse();
+            try {
+                errorResponse.errorMessageString = json.getString(Constant.errorMessage);
+                callBack.onFailureError(errorResponse);
+            } catch (JSONException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
 
     public void callFBLogin(Context context, String fbId, LoginListener loginCallback) {
-        FacebookManager.getInstance(context).initializeRegisterCallback(context, loginCallback);
+        //FacebookManager.getInstance(context).initializeRegisterCallback(context, loginCallback);
     }
 
 
@@ -1196,9 +1193,9 @@ public class SSOManager {
         LinkedInManager.getInstance(context).initiateLinkedInSDK(context,loginCallback);
     }*/
 
-//    public void callGoogleSignIn(Context context, String serverClientId, LoginListener loginCallback) {
-//        GoogleManager.getInstance(context).callGoogleSign(context, serverClientId, loginCallback);
-//    }
+    public void callGoogleSignIn(Context context, String serverClientId, LoginListener loginCallback) {
+        //  GoogleManager.getInstance(context).callGoogleSign(context, serverClientId, loginCallback);
+    }
 
 
     public void callSubscribeUserApi(final Context context, final LoginCallback loginCallback) {
@@ -1276,17 +1273,47 @@ public class SSOManager {
                 errorResponse.errorMessageString = response.message();
                 loginCallback.onError(errorResponse);
             }
-
-
         } else {
             if (response.code() == Constant.SUBSCRIBE_ERROR) {
-                callSubscribeUserApi(mContext, loginCallback);
+                //This logic need to change in upComing builds.
+                JSONObject jObjError = null;
+                try {
+                    jObjError = new JSONObject(response.errorBody().string());
+                    if(BuildConfig.DEBUG) Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
+                    String erroMessage = jObjError.getString("errorMessage");
+                    if (erroMessage != null && erroMessage.equalsIgnoreCase("User haven't right access to application")) {
+                        try {
+                            jObjError.put(Constant.errorCode, "403");
+                            jObjError.put(Constant.errorMessage, "User Deactivated");
+                            seterrorResponse(jObjError, loginCallback);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        callSubscribeUserApi(mContext, loginCallback);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    loginCallback.onError(new ErrorResponse());
+                }
             } else {
                 try {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
+                    String erroMessage = jObjError.getString("errorMessage");
+                    jObjError.put(Constant.errorCode, String.valueOf(response.code()));
+                    jObjError.put(Constant.errorMessage,erroMessage );
                     seterrorResponse(jObjError, loginCallback);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    ErrorResponse errorRes = new ErrorResponse();
+                    if (response != null && response.code() > 0) {
+                        errorRes.errorCode = String.valueOf(response.code());
+                    } else {
+                        errorRes.errorCode = "";
+                    }
+                    errorRes.errorMessageString = "Something went wrong , please wait";
+                    loginCallback.onError(errorResponse);
                 }
             }
 
@@ -1339,7 +1366,7 @@ public class SSOManager {
             }
         }
 
-        Log.i(TAG, "getFilterObject: Filter List=" + mFilterList);
+        if(BuildConfig.DEBUG) Log.i(TAG, "getFilterObject: Filter List=" + mFilterList);
         return mFilterList;
 
     }
@@ -1440,7 +1467,7 @@ public class SSOManager {
         sessionModel.email = info.email;
         sessionModel.password = info.passWord;
         sessionModel.sessionKey = PreferenceManager.getInstance(mContext).getSessionKey();
-        Log.i(TAG, "Getting SessionKey from preference manager=" + sessionModel.sessionKey);
+        if(BuildConfig.DEBUG)Log.i(TAG, "Getting SessionKey from preference manager=" + sessionModel.sessionKey);
         try {
             sessionModel.sessionKey = AESCrypt.encrypt(Constant.SHARE_SESSION.dummy, sessionModel.sessionKey);
             PreferenceManager.getInstance(SSOManager.mContext).setSessionModel(sessionModel);
@@ -1518,7 +1545,10 @@ public class SSOManager {
         ssoManager = null;
     }
 
-     public void setUserString(String value, String key) {
+
+    //Set String
+
+    public void setUserString(String value, String key) {
         editor.putString(key, value);
         doCommit();
     }
@@ -1526,4 +1556,7 @@ public class SSOManager {
     public String getUserString(String key) {
         return sharedPreferences.getString(key, "");
     }
+
+
+
 }
