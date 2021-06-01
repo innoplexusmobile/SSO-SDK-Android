@@ -460,11 +460,11 @@ public class SSOManager {
     }
 
 
-    public void forgotPassword(String emailId, final AuthResponseInterface listener) {
+    public void forgotPassword(String lang,String emailId, final AuthResponseInterface listener) {
         try {
             final ErrorResponse errorResponse = new ErrorResponse();
             if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
-                RetrofitRequestBuilder.getInstance(mContext).forgotPassword(emailId, new Callback<RequestParentPojo>() {
+                RetrofitRequestBuilder.getInstance(mContext).forgotPassword(lang,emailId, new Callback<RequestParentPojo>() {
                     @Override
                     public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
                         if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
