@@ -44,9 +44,8 @@ public class RetrofitClientBuilder {
                 if(TokenId!=null){
                     Log.i(TAG, "intercept: Token="+TokenId);
                     requestBuilder.header("Authorization",TokenId);
-                    requestBuilder.header("lang", Locale.getDefault().getLanguage().toUpperCase());
                 }
-
+                requestBuilder.header("lang", Locale.getDefault().getLanguage().toUpperCase());
                 Request request = requestBuilder.build();
 
 
