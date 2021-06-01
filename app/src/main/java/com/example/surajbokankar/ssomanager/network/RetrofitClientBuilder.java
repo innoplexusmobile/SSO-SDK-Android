@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Interceptor;
@@ -33,6 +34,7 @@ public class RetrofitClientBuilder {
 
 
     public RetrofitClientBuilder setHTTPClient(final  Context context){
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
@@ -42,6 +44,7 @@ public class RetrofitClientBuilder {
                 if(TokenId!=null){
                     Log.i(TAG, "intercept: Token="+TokenId);
                     requestBuilder.header("Authorization",TokenId);
+                    requestBuilder.header("lang", Locale.getDefault().getLanguage().toUpperCase());
                 }
 
                 Request request = requestBuilder.build();

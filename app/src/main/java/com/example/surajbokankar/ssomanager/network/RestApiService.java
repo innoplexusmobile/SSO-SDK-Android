@@ -34,7 +34,6 @@ public interface RestApiService {
 
     @POST("forgot_password/")
     public Call<RequestParentPojo> forgotPassword(
-            @Header("language") String language,
             @Body RequestBody requestBody);
 
     @PUT("change_password/")

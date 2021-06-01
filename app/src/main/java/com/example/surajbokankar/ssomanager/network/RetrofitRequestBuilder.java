@@ -15,12 +15,17 @@ import com.example.surajbokankar.ssomanager.ssomanager.SSOManager;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Set;
 
+import okhttp3.Interceptor;
 import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -118,6 +123,8 @@ public class RetrofitRequestBuilder {
             Retrofit retrofitBuilder = RetrofitClientBuilder.getInstance().setHTTPClient(mContext).setBaseUrl(url + UrlConstant.OAUTH_URL).builder();
             RestApiService apiService = retrofitBuilder.create(RestApiService.class);
 
+
+
             JSONObject requestMap = new JSONObject();
             requestMap.put(Constant.SSORequest.oldPassword, oldPassword);
             requestMap.put(Constant.SSORequest.newPassword, newPassword);
@@ -136,7 +143,7 @@ public class RetrofitRequestBuilder {
     }
 
 
-    public Call<RequestParentPojo> forgotPassword(String lang, String emailId, Callback<RequestParentPojo> listener) {
+    public Call<RequestParentPojo> forgotPassword( String emailId, Callback<RequestParentPojo> listener) {
         Call<RequestParentPojo> call = null;
 
         try {
@@ -152,7 +159,7 @@ public class RetrofitRequestBuilder {
             jsonObject.put(Constant.SSORequest.clientId, clientId);
 
             RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
-            call = apiService.forgotPassword(lang,requestBody);
+            call = apiService.forgotPassword(requestBody);
             call.enqueue(listener);
             Log.i(TAG, "forgotPassword: Request  Url=" + call.request().headers() + "\n" + jsonObject + "\n" + call.request().url());
         } catch (Exception e) {

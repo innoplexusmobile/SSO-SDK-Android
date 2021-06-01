@@ -99,7 +99,7 @@ public class SSOManager {
             code = url.split("=")[1];
             isCallBackUrl = true;
         }
-        if(BuildConfig.DEBUG) Log.i(TAG, "getCallBackUrl: Code=" + code);
+        if (BuildConfig.DEBUG) Log.i(TAG, "getCallBackUrl: Code=" + code);
         SSOManager.getInstance(mContext).setRedirectCode(code);
         return isCallBackUrl;
     }
@@ -135,7 +135,7 @@ public class SSOManager {
             }
 
         } catch (Exception e) {
-            if(BuildConfig.DEBUG)  Log.e(TAG, "login: Error=", e);
+            if (BuildConfig.DEBUG) Log.e(TAG, "login: Error=", e);
         }
 
 
@@ -162,7 +162,8 @@ public class SSOManager {
                     } else {
                         try {
                             JSONObject jObjError = new JSONObject(response.errorBody().string());
-                            if(BuildConfig.DEBUG)  Log.i(TAG, "onResponseFailure: " + jObjError.getString("message"));
+                            if (BuildConfig.DEBUG)
+                                Log.i(TAG, "onResponseFailure: " + jObjError.getString("message"));
                             if (loginCallback != null) {
                                 loginCallback.onError(jObjError.getString("message"));
                             }
@@ -389,7 +390,7 @@ public class SSOManager {
             errorResponse.errorMessageString = "No User Consent";
             callback.onError(errorResponse);
             dialog.dismiss();
-            if(BuildConfig.DEBUG)   Log.i(TAG, "getCustomDialog: Error=" + e.getMessage());
+            if (BuildConfig.DEBUG) Log.i(TAG, "getCustomDialog: Error=" + e.getMessage());
         }
 
 
@@ -449,7 +450,8 @@ public class SSOManager {
 
                 @Override
                 public void onFailure(Call<AccessTokenParentPojo> call, Throwable t) {
-                    if(BuildConfig.DEBUG) Log.i(TAG, "onFailure: Access Token Error=" + t.getMessage());
+                    if (BuildConfig.DEBUG)
+                        Log.i(TAG, "onFailure: Access Token Error=" + t.getMessage());
                     listener.onFailure(t.getMessage());
                 }
             });
@@ -460,11 +462,11 @@ public class SSOManager {
     }
 
 
-    public void forgotPassword(String lang,String emailId, final AuthResponseInterface listener) {
+    public void forgotPassword(String emailId, final AuthResponseInterface listener) {
         try {
             final ErrorResponse errorResponse = new ErrorResponse();
             if (NetworkManager.getInstance().isConnectingToInternet(mContext)) {
-                RetrofitRequestBuilder.getInstance(mContext).forgotPassword(lang,emailId, new Callback<RequestParentPojo>() {
+                RetrofitRequestBuilder.getInstance(mContext).forgotPassword(emailId, new Callback<RequestParentPojo>() {
                     @Override
                     public void onResponse(Call<RequestParentPojo> call, Response<RequestParentPojo> response) {
                         if (StatusCodeHandler.isResponseCodeValidated(response.code(), Constant.STATUS_OK, Constant.STATUS_OK_MAX)) {
@@ -495,7 +497,7 @@ public class SSOManager {
                 listener.onFailureError(errorResponse);
             }
         } catch (Exception e) {
-            if(BuildConfig.DEBUG)Log.i(TAG, "forgotPassword: Error=" + e.getMessage());
+            if (BuildConfig.DEBUG) Log.i(TAG, "forgotPassword: Error=" + e.getMessage());
         }
     }
 
@@ -526,7 +528,8 @@ public class SSOManager {
 
                     @Override
                     public void onFailure(Call<RequestParentPojo> call, Throwable t) {
-                        if(BuildConfig.DEBUG)  Log.i(TAG, "onResponse: ChangePassword=" + t.getMessage());
+                        if (BuildConfig.DEBUG)
+                            Log.i(TAG, "onResponse: ChangePassword=" + t.getMessage());
                         errorResponse.errorMessageString = t.getMessage();
                         listener.onFailureError(errorResponse);
                     }
@@ -605,7 +608,7 @@ public class SSOManager {
                 } else {
                     errorResponse.errorMessageString = mContext.getResources().getString(R.string.blankToken);
                     listener.onFailureError(errorResponse);
-                    if(BuildConfig.DEBUG)Log.i(TAG, "logoutUser: TokenId Blank");
+                    if (BuildConfig.DEBUG) Log.i(TAG, "logoutUser: TokenId Blank");
                 }
             } else {
                 errorResponse.errorMessageString = mContext.getResources().getString(R.string.network_error);
@@ -749,7 +752,8 @@ public class SSOManager {
                             JSONObject jObjError = null;
                             try {
                                 jObjError = new JSONObject(response.errorBody().string());
-                                if(BuildConfig.DEBUG) Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
+                                if (BuildConfig.DEBUG)
+                                    Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
                                 String erroMessage = jObjError.getString("errorMessage");
                                 if (erroMessage != null && erroMessage.equalsIgnoreCase("User haven't right access to application")) {
                                     try {
@@ -893,7 +897,7 @@ public class SSOManager {
         editor.putString(Constant.PreferenceString.tokenString, tokenId);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         editor.putString(Constant.PreferenceString.TimeStamp, String.valueOf(timestamp.getTime()));
-        if(BuildConfig.DEBUG)Log.i(TAG, "AccessToken TimeStamp=" + timestamp.getTime());
+        if (BuildConfig.DEBUG) Log.i(TAG, "AccessToken TimeStamp=" + timestamp.getTime());
         doCommit();
     }
 
@@ -907,9 +911,11 @@ public class SSOManager {
         if (tokenSetTime != null && !TextUtils.isEmpty(tokenSetTime)) {
             Long timeDiff = timestamp.getTime() - Long.parseLong(tokenSetTime);
             if (timeDiff != null) {
-                if(BuildConfig.DEBUG) Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
+                if (BuildConfig.DEBUG)
+                    Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
                 if (((timeDiff / 1000) / 60) >= 1380) {
-                    if(BuildConfig.DEBUG) Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
+                    if (BuildConfig.DEBUG)
+                        Log.i(TAG, "Token time difference = " + (((timeDiff / 1000) / 60)));
                     getCallBackUrlOTPEnabledState(applicationContext, loginCallback);
                 } else {
                     loginCallback.onSuccess(getUserInfo());
@@ -1141,7 +1147,7 @@ public class SSOManager {
     public void seterrorResponse(JSONObject json, LoginCallback callBack) {
         try {
             ErrorResponse errorResponse = new ErrorResponse();
-            if(json.has(Constant.errorCode)){
+            if (json.has(Constant.errorCode)) {
                 String errorCode = json.getString(Constant.errorCode);
                 errorResponse.errorCode = errorCode;
             }
@@ -1164,7 +1170,7 @@ public class SSOManager {
         try {
             ErrorResponse errorResponse = new ErrorResponse();
             if (json.has(Constant.errorMessage)) {
-                if(json.has(Constant.errorCode)){
+                if (json.has(Constant.errorCode)) {
                     String errorCode = json.getString(Constant.errorCode);
                     errorResponse.errorCode = errorCode;
                 }
@@ -1279,7 +1285,7 @@ public class SSOManager {
                 JSONObject jObjError = null;
                 try {
                     jObjError = new JSONObject(response.errorBody().string());
-                    if(BuildConfig.DEBUG) Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
+                    if (BuildConfig.DEBUG) Log.i(TAG, "onLoginOrSubscribeSuccess: " + jObjError);
                     String erroMessage = jObjError.getString("errorMessage");
                     if (erroMessage != null && erroMessage.equalsIgnoreCase("User haven't right access to application")) {
                         try {
@@ -1302,7 +1308,7 @@ public class SSOManager {
                     JSONObject jObjError = new JSONObject(response.errorBody().string());
                     String erroMessage = jObjError.getString("errorMessage");
                     jObjError.put(Constant.errorCode, String.valueOf(response.code()));
-                    jObjError.put(Constant.errorMessage,erroMessage );
+                    jObjError.put(Constant.errorMessage, erroMessage);
                     seterrorResponse(jObjError, loginCallback);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -1366,7 +1372,7 @@ public class SSOManager {
             }
         }
 
-        if(BuildConfig.DEBUG) Log.i(TAG, "getFilterObject: Filter List=" + mFilterList);
+        if (BuildConfig.DEBUG) Log.i(TAG, "getFilterObject: Filter List=" + mFilterList);
         return mFilterList;
 
     }
@@ -1467,7 +1473,8 @@ public class SSOManager {
         sessionModel.email = info.email;
         sessionModel.password = info.passWord;
         sessionModel.sessionKey = PreferenceManager.getInstance(mContext).getSessionKey();
-        if(BuildConfig.DEBUG)Log.i(TAG, "Getting SessionKey from preference manager=" + sessionModel.sessionKey);
+        if (BuildConfig.DEBUG)
+            Log.i(TAG, "Getting SessionKey from preference manager=" + sessionModel.sessionKey);
         try {
             sessionModel.sessionKey = AESCrypt.encrypt(Constant.SHARE_SESSION.dummy, sessionModel.sessionKey);
             PreferenceManager.getInstance(SSOManager.mContext).setSessionModel(sessionModel);
@@ -1556,7 +1563,6 @@ public class SSOManager {
     public String getUserString(String key) {
         return sharedPreferences.getString(key, "");
     }
-
 
 
 }
