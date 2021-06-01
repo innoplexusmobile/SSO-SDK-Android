@@ -136,7 +136,7 @@ public class RetrofitRequestBuilder {
     }
 
 
-    public Call<RequestParentPojo> forgotPassword(String emailId, Callback<RequestParentPojo> listener) {
+    public Call<RequestParentPojo> forgotPassword(String lang, String emailId, Callback<RequestParentPojo> listener) {
         Call<RequestParentPojo> call = null;
 
         try {
@@ -152,7 +152,7 @@ public class RetrofitRequestBuilder {
             jsonObject.put(Constant.SSORequest.clientId, clientId);
 
             RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
-            call = apiService.forgotPassword(requestBody);
+            call = apiService.forgotPassword(lang,requestBody);
             call.enqueue(listener);
             Log.i(TAG, "forgotPassword: Request  Url=" + call.request().headers() + "\n" + jsonObject + "\n" + call.request().url());
         } catch (Exception e) {

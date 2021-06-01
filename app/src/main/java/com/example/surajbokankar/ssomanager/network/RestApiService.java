@@ -33,7 +33,9 @@ public interface RestApiService {
     public Call<AccessTokenParentPojo> callAuthorizationApi(@QueryMap HashMap<String, Object> userRequest);
 
     @POST("forgot_password/")
-    public Call<RequestParentPojo> forgotPassword(@Body RequestBody requestBody);
+    public Call<RequestParentPojo> forgotPassword(
+            @Header("language") String language,
+            @Body RequestBody requestBody);
 
     @PUT("change_password/")
     public Call<RequestParentPojo> changePassword(@Header("Authorization") String token, @Body RequestBody requestBody);
